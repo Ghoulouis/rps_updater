@@ -1,4 +1,4 @@
-import { parseUnits } from "ethers";
+import { formatUnits, parseUnits } from "ethers";
 import { getPrice, getTotalTVL } from "./helper";
 
 const incentiveToken = {
@@ -20,17 +20,16 @@ const tokens = [
     decimals: 6,
   },
 ];
-
+let precision = 10n ** 18n;
 async function getRpsForToken(apy: number, symbol: string) {
   let token = tokens.find((t) => t.symbol === symbol);
 
-  let precision = 10n ** 18n;
   let price = await getPrice(symbol);
   let priceBigInt = parseUnits(price.toFixed(incentiveToken.decimals), incentiveToken.decimals);
 
   let apyBigInt = BigInt(apy.toFixed(0));
   let numberUnitOnAToken = parseUnits("1", token?.decimals);
-  let reward = (apyBigInt * priceBigInt * precision) / numberUnitOnAToken;
+  let reward = (apyBigInt * priceBigInt * precision) / (100n * numberUnitOnAToken);
   let rps = reward / (365n * 24n * 3600n);
   console.log(symbol, rps);
   return rps;
@@ -46,7 +45,11 @@ async function main() {
   }
   await getRpsForToken(apy, "ETH");
   await getRpsForToken(apy, "USDT");
-  await getRpsForToken(apy, "USDC");
+  let rpsUSDC = await getRpsForToken(apy, "USDC");
+
+  let precision = 10n ** 18n;
+  let rewardInAYear = (rpsUSDC * 365n * 24n * 3600n * 1_000_000n) / precision;
+  console.log("rewardInAYear", formatUnits(rewardInAYear, incentiveToken.decimals));
 }
 
 main();
