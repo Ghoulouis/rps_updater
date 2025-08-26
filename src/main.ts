@@ -1,4 +1,4 @@
-import { formatUnits, parseUnits } from "ethers";
+import { formatUnits, parseEther, parseUnits } from "ethers";
 import { getPrice, getTotalTVL } from "./helper";
 
 const incentiveToken = {
@@ -43,13 +43,16 @@ async function main() {
 
     console.log("apy", apy);
   }
-  await getRpsForToken(apy, "ETH");
+  let rpsETH = await getRpsForToken(apy, "ETH");
   await getRpsForToken(apy, "USDT");
   let rpsUSDC = await getRpsForToken(apy, "USDC");
 
   let precision = 10n ** 18n;
-  let rewardInAYear = (rpsUSDC * 365n * 24n * 3600n * 1_000_000n) / precision;
-  console.log("rewardInAYear", formatUnits(rewardInAYear, incentiveToken.decimals));
+  let rewardUSDCInAYear = (rpsUSDC * 365n * 24n * 3600n * 1_000_000n) / precision;
+  console.log("reward One USDC In A Year", formatUnits(rewardUSDCInAYear, incentiveToken.decimals));
+
+  let rewardETHInAYear = (rpsETH * 365n * 24n * 3600n * parseEther("1")) / precision;
+  console.log("reward One USDC In A Year", formatUnits(rewardETHInAYear, incentiveToken.decimals));
 }
 
 main();
