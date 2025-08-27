@@ -1,5 +1,5 @@
 export async function getTotalTVL() {
-  return 30000;
+  return 13000;
 }
 
 export async function getPrice(symbol: string) {

@@ -20,7 +20,7 @@ const tokens = [
     decimals: 6,
   },
 ];
-let precision = 10n ** 24n;
+let precision = 10n ** 27n;
 
 async function getRpsForToken(apy: number, symbol: string) {
   let token = tokens.find((t) => t.symbol === symbol);
@@ -37,11 +37,8 @@ async function getRpsForToken(apy: number, symbol: string) {
 
 async function getAPRfromRps(rps: bigint, symbol: string) {
   let token = tokens.find((t) => t.symbol === symbol);
-
   let rewardUSDTATokenAYear = (rps * 365n * 24n * 3600n * parseUnits("1", token!.decimals)) / precision;
-
   let priceToken = await getPrice(symbol);
-
   let priceUSDTToken = parseUnits(priceToken.toFixed(incentiveToken.decimals), incentiveToken.decimals);
   console.log("priceUSDTToken", priceUSDTToken);
   console.log("reward usdt", rewardUSDTATokenAYear);
@@ -59,13 +56,10 @@ async function main() {
   let rpsETH = await getRpsForToken(apy, "ETH");
   await getRpsForToken(apy, "USDT");
   let rpsUSDC = await getRpsForToken(apy, "USDC");
-
   let rewardUSDCInAYear = (rpsUSDC * 365n * 24n * 3600n * 1_000_000n) / precision;
   console.log("reward One USDC In A Year", formatUnits(rewardUSDCInAYear, incentiveToken.decimals));
-
   let rewardETHInAYear = (rpsETH * 365n * 24n * 3600n * parseEther("1")) / precision;
-  console.log("reward One USDC In A Year", formatUnits(rewardETHInAYear, incentiveToken.decimals));
-
+  console.log("reward One ETH In A Year", formatUnits(rewardETHInAYear, incentiveToken.decimals));
   await getAPRfromRps(rpsETH, "ETH");
 }
 
